@@ -51,3 +51,20 @@ class GammaScalper(BaseBot):
         elif diff < 0:
             print(f"Hedged: Selling {abs(diff)} LON_ETF")
             self.send_order(OrderRequest("LON_ETF", ob_etf.buy_orders[0].price, Side.SELL, abs(diff)))
+
+        # -- callbacks --
+
+        # these functions trigger on changes in the order book, and on every trade
+        
+        # overridden abstract method
+        def on_orderbook(self, ob: OrderBook):
+            # we only care about moves in the etf to trigger a hedge
+            if ob.product == "LON_ETF":
+                self.rehedge()
+
+        # overridden abstract method
+        def on_trades(self, trade: Trade):
+            # if we get a fill on a LON_FLY, we need to hedge immediately
+            if trade.product == "LON_FLY":
+                self.rehedge()
+
