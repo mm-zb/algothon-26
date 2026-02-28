@@ -2,29 +2,29 @@ import time
 from bot_template import BaseBot, OrderBook, Trade, Side, OrderRequest
 from constants import TEST_URL, CHALLENGE_URL, USERNAME, PASSWORD
 
-# -- gamma scalp calculation helpers --
-
-# calculates the delta of one LON_FLY contract
-# dependent on the current price of the ETF
-# < 6200        -> -2
-# 6200-6600     -> +1
-# 6600-7000     -> -1
-# > 7000        -> +2
-def get_lon_fly_delta(self, etf_price: float) -> float:
-    if etf_price < 6200:
-        return -2.0
-    if 6200 <= etf_price < 6600:
-        return 1.0
-    if 6600 <= etf_price < 7000:
-        return -1.0
-    return 2.0
-
 class GammaScalper(BaseBot):
     def __init__(self, cmi_url, username, password, target_fly=10):
         super().__init__(cmi_url, username, password)
         self.target_fly = target_fly
         self.last_hedge_time = 0
         self.cooldown = 1.1 # avoid getting rate limited
+
+    # -- gamma scalp calculation helpers --
+
+    # calculates the delta of one LON_FLY contract
+    # dependent on the current price of the ETF
+    # < 6200        -> -2
+    # 6200-6600     -> +1
+    # 6600-7000     -> -1
+    # > 7000        -> +2
+    def get_lon_fly_delta(self, etf_price: float) -> float:
+        if etf_price < 6200:
+            return -2.0
+        if 6200 <= etf_price < 6600:
+            return 1.0
+        if 6600 <= etf_price < 7000:
+            return -1.0
+        return 2.0
     
     # calculates net delta and trades the etf to offset it
     def rehedge(self):
