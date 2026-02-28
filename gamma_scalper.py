@@ -23,5 +23,31 @@ class GammaScalper(BaseBot):
         super().__init__(*args, **kwargs)
         self.target_fly_inventory
     
-    
-    
+    # calculates net delta and trades the etf to offset it
+    def rehedge(self):
+        # TODO: use stream instead of big get
+        # update manually
+        positions = self.get_positions()
+        fly_pos = positions.get("LON_FLY", 0)
+        etf_pos = positions.get("LON_ETF", 0)
+        
+        # get current etf price
+        ob_etf = self.get_orderbook("LON_ETF")
+
+        # no positions
+        if not (ob_etf.buy_orders and ob_etf.sell_orders):
+            return
+        etf_mid = (ob_etf.buy_orders[0].price + ob_etf.sell_orders[0].price) / 2
+        
+        # calculate how much etf we should have
+        current_lon_fly_delta = get_lon_fly_delta(etf_mid)
+        desired_etf_pos = round(-(fly_pos * current_lon_fly_delta))
+        
+        diff = desired_etf_pos - etf_pos
+        
+        if diff > 0:
+            print(f"Hedged: Buying {diff} LON_ETF")
+            self.send_order(OrderRequest("LON_ETF", ob_etf.sell_orders[0].price, Side.BUY, abs(diff)))
+        elif diff < 0:
+            print(f"Hedged: Selling {abs(diff)} LON_ETF")
+            self.send_order(OrderRequest("LON_ETF", ob_etf.buy_orders[0].price, Side.SELL, abs(diff)))
