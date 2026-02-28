@@ -24,10 +24,15 @@ class GammaScalper(BaseBot):
         super().__init__(cmi_url, username, password)
         self.target_fly = target_fly
         self.last_hedge_time = 0
-        self.cooldown = 1.1
+        self.cooldown = 1.1 # avoid getting rate limited
     
     # calculates net delta and trades the etf to offset it
     def rehedge(self):
+
+        # avoid rate limit
+        if time.time() - self.last_hedge_time < self.cooldown:
+            return
+        
         # TODO: use stream instead of big get
         # update manually
         positions = self.get_positions()
