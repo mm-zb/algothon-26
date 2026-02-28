@@ -1,5 +1,6 @@
-from bot_template import *
-
+import time
+from bot_template import BaseBot, OrderBook, Trade, Side, OrderRequest
+from constants import TEST_URL, COMP_URL, USERNAME, PASSWORD
 
 # -- gamma scalp calculation helpers --
 
