@@ -69,3 +69,25 @@ class GammaScalper(BaseBot):
             if trade.product == "LON_FLY":
                 self.rehedge()
 
+
+if __name__ == "__main__":
+    goon = GammaScalper(TEST_URL, USERNAME, PASSWORD, target_fly=5)
+    
+    print("Starting Gamma Scalper...")
+    goon.start() # starts the live SSE stream for on_orderbook / on_trades
+
+    try:
+        while True:
+            # main loop handles inventory acquisition and general status
+            goon.manage_inventory()
+            
+            # print status every 10 seconds
+            pos = goon.get_positions()
+            print(f"Current Positions: {pos}")
+            
+            time.sleep(5) 
+
+    except KeyboardInterrupt:
+        print("Stopping bot...")
+        goon.stop()
+        print("Bot stopped.")
