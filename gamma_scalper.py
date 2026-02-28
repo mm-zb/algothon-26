@@ -46,11 +46,11 @@ class GammaScalper(BaseBot):
         diff = desired_etf_pos - etf_pos
         
         if diff > 0:
-            print(f"Hedged: Buying {diff} LON_ETF")
             self.send_order(OrderRequest("LON_ETF", ob_etf.sell_orders[0].price, Side.BUY, abs(diff)))
+            print(f"Hedged: Buying {diff} LON_ETF")
         elif diff < 0:
-            print(f"Hedged: Selling {abs(diff)} LON_ETF")
             self.send_order(OrderRequest("LON_ETF", ob_etf.buy_orders[0].price, Side.SELL, abs(diff)))
+            print(f"Hedged: Selling {abs(diff)} LON_ETF")
 
         # -- callbacks --
 
