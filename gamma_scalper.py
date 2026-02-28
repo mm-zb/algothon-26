@@ -34,7 +34,7 @@ class GammaScalper(BaseBot):
             return
         
         # TODO: use stream instead of big get
-        # update manually
+        # get current positions
         positions = self.get_positions()
         fly_pos = positions.get("LON_FLY", 0)
         etf_pos = positions.get("LON_ETF", 0)
@@ -59,10 +59,10 @@ class GammaScalper(BaseBot):
             self.last_hedge_time = time.time()
             if diff > 0:
                 self.send_order(OrderRequest("LON_ETF", ob_etf.sell_orders[0].price, Side.BUY, abs(diff)))
-                print(f"Hedged: Buying {diff} LON_ETF")
+                print(f"ETF Price: {etf_mid:.2f} | Hedged: Buying {diff} LON_ETF")
             elif diff < 0:
                 self.send_order(OrderRequest("LON_ETF", ob_etf.buy_orders[0].price, Side.SELL, abs(diff)))
-                print(f"Hedged: Selling {abs(diff)} LON_ETF")
+                print(f"ETF Price: {etf_mid:.2f} | Hedged: Selling {abs(diff)} LON_ETF")
         return
 
     def manage_inventory(self):
