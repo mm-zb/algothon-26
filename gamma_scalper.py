@@ -10,7 +10,7 @@ from constants import TEST_URL, CHALLENGE_URL, USERNAME, PASSWORD
 # 6200-6600     -> +1
 # 6600-7000     -> -1
 # > 7000        -> +2
-def get_lon_fly_delta(self, etf_price: float) -> float:
+def get_lon_fly_delta(etf_price: float) -> float:
     if etf_price < 6200:
         return -2.0
     if 6200 <= etf_price < 6600:
